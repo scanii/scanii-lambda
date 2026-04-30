@@ -18,6 +18,11 @@ const ENDPOINT = process.env.SCANII_TEST_ENDPOINT ?? 'http://localhost:4000';
 const KEY = 'key';
 const SECRET = 'secret';
 
+// scanii-cli serves fixture files at /static/samples/* (no auth required).
+// Use the malware fixture so fetch tests exercise a URL scanii-cli controls,
+// with no dependency on external hosts.
+const MALWARE_URL = `${ENDPOINT}/static/samples/malware`;
+
 async function isScaniiCliRunning() {
   try {
     const res = await fetch(`${ENDPOINT}/v2.2/ping`, {
@@ -53,18 +58,18 @@ function client() {
 
 describe('integration: client wrapper against scanii-cli', () => {
   itIfCli('fetch returns a pending result with id and resourceLocation', async function () {
-    const result = await client().fetch('https://example.com/', {});
+    const result = await client().fetch(MALWARE_URL, {});
     assert.ok(result.id, 'expected id in pending result');
     assert.ok(result.resourceLocation, 'expected resourceLocation in pending result');
   });
 
   itIfCli('fetch passes metadata through', async function () {
-    const result = await client().fetch('https://example.com/', { source: 'lambda-integration-test' });
+    const result = await client().fetch(MALWARE_URL, { source: 'lambda-integration-test' });
     assert.ok(result.id, 'expected id in pending result');
   });
 
   itIfCli('retrieve of a previously fetched id returns a completed result', async function () {
-    const pending = await client().fetch('https://example.com/', {});
+    const pending = await client().fetch(MALWARE_URL, {});
     await new Promise(r => setTimeout(r, 500));
     const result = await client().retrieve(pending.id);
     assert.strictEqual(result.id, pending.id);
