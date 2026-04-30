@@ -19,6 +19,8 @@ describe('S3 handler tests', () => {
     CONFIG.CALLBACK_URL = "https://example.com/callback/";
     CONFIG.KEY = "k";
     CONFIG.SECRET = "s";
+    CONFIG.MAX_ATTEMPTS = 1;
+    CONFIG.MAX_ATTEMPT_DELAY_MSEC = 1_000;
     CONFIG.SIGNED_URL_DURATION = 10;
   });
 
