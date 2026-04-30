@@ -1,6 +1,5 @@
 const s3HandlerModule = require('../lib/s3-handler');
 const handler = s3HandlerModule.handler;
-const scanii = require('../lib/client');
 const assert = require('assert');
 const it = require("mocha/lib/mocha.js").it;
 const describe = require("mocha/lib/mocha.js").describe;
@@ -8,18 +7,13 @@ const beforeEach = require("mocha/lib/mocha.js").beforeEach;
 const afterEach = require("mocha/lib/mocha.js").afterEach;
 const nock = require('nock');
 const CONFIG = require('../lib/config').CONFIG;
-const sinon = require('sinon');
 const {defaults} = require("../lib/config");
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 "use strict";
 
 describe('S3 handler tests', () => {
-  const sandbox = sinon.createSandbox();
-
   beforeEach(() => {
-    sandbox.spy(scanii.ScaniiClient);
-
     s3HandlerModule._getSignedUrl = async () => 'https://s3.amazonaws.com/';
 
     CONFIG.CALLBACK_URL = "https://example.com/callback/";
@@ -32,7 +26,6 @@ describe('S3 handler tests', () => {
 
   afterEach(() => {
     nock.cleanAll();
-    sandbox.restore();
     s3HandlerModule._getSignedUrl = getSignedUrl;
     defaults();
   });
