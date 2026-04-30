@@ -46,7 +46,7 @@ Resources:
       CodeUri: .
       FunctionName: !Sub "${AWS::StackName}-Submit"
       Handler: lib/s3-handler.handler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       MemorySize: 256
       Timeout: 300
       Description: Submits objects to be analyzed by scanii.com
@@ -70,7 +70,7 @@ Resources:
       CodeUri: .
       FunctionName: !Sub "${AWS::StackName}-Callback"
       Handler: lib/ag-handler.handler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       MemorySize: 256
       Timeout: 60
       Description: Handles scanii.com's result callbacks

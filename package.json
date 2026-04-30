@@ -11,14 +11,12 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.600.0",
     "@aws-sdk/s3-request-presigner": "^3.600.0",
-    "axios": "^1.7.4",
-    "serialize-javascript": "^7.0.3"
+    "@scanii/core": "^1.1.0"
   },
   "devDependencies": {
     "aws-sdk-client-mock": "^4.0.1",
     "eslint": "^10.0.3",
     "mocha": "^11.7.5",
-    "nock": "^14.0.11",
-    "sinon": "^21.0.3"
+    "nock": "^14.0.11"
   }
 }
