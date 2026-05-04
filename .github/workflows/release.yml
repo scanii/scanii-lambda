@@ -1,9 +1,5 @@
 name: Release
 
-# Triggered by Rafael publishing the GitHub Release (UI or `gh release create`).
-# This workflow does NOT create the release — it only publishes the application
-# to the AWS Serverless Application Repository.
-
 on:
   release:
     types: [published]
@@ -13,7 +9,8 @@ jobs:
     name: Publish to AWS Serverless Application Repository
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      id-token: write   # required to mint the OIDC JWT
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -23,13 +20,29 @@ jobs:
           cache: npm
 
       - name: Configure AWS credentials
+        id: aws-creds
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_PROD_ACCOUNT_ID }}:role/scanii-lambda-gha
+          role-session-name: gha-scanii-lambda-release
           aws-region: us-east-1
 
-      - name: Deploy
+      - name: Build and package
+        run: make build package
+
+      - name: Publish to Serverless Application Repository
         env:
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_PROD_ACCOUNT_ID }}
-        run: bash ./.github/workflows/deploy.sh
+          LC_ALL: C.UTF-8
+          LANG: C.UTF-8
+          AWS_DEFAULT_REGION: us-east-1
+          SAM_CLI_TELEMETRY: 0
+          ACCOUNT_ID: ${{ steps.aws-creds.outputs.aws-account-id }}
+          APPLICATION: UvaSoftware-Scanii-Lambda
+        run: |
+          VERSION=$(node -pe "require('./package.json').version")
+          aws serverlessrepo create-application-version \
+            --application-id "arn:aws:serverlessrepo:us-east-1:${ACCOUNT_ID}:applications/${APPLICATION}" \
+            --semantic-version "${VERSION}" \
+            --source-code-url "https://github.com/scanii/scanii-lambda/releases/tag/v${VERSION}" \
+            --template-body file://scanii-lambda.yaml >/dev/null
+          echo "SAM application ${APPLICATION} version ${VERSION} published!"
