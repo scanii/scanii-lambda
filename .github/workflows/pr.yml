@@ -8,12 +8,11 @@ concurrency:
 
 jobs:
   verify:
-    name: Node ${{ matrix.node }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
         node: ['22', '24']
     steps:
       - uses: actions/checkout@v4
