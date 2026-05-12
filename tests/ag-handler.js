@@ -12,6 +12,14 @@ const { S3Client, DeleteObjectCommand, PutObjectTaggingCommand, GetObjectTagging
 const s3Mock = mockClient(S3Client);
 
 describe('Api Gateway handler tests', () => {
+  // AWS Lambda Node.js 24+ rejects async handlers that declare a `callback` param
+  // (Runtime.CallbackHandlerDeprecated). handler.length encodes that arity — keep
+  // it at ≤ 2 so init never regresses.
+  it('handler signature is compatible with Lambda Node.js 24+', () => {
+    assert.ok(handler.length <= 2,
+      `handler accepts ${handler.length} params; Lambda Node.js 24+ rejects callback-based handlers`);
+  });
+
   beforeEach(() => {
     s3Mock.reset();
 

@@ -31,3 +31,66 @@ jobs:
 
       - name: Test
         run: npm test
+
+  runtime-init:
+    name: Lambda Node 24 runtime init smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci --omit=dev
+
+      # Initialize each handler inside the real Lambda Node.js 24 runtime image
+      # (Runtime Interface Emulator bundled). This exercises the same init code
+      # path (errorOnDeprecatedCallback, ImportModuleError, etc.) that runs in
+      # production — catches callback-shape regressions and other runtime-init
+      # incompatibilities that plain `node` cannot surface.
+      - name: Probe handlers in Lambda Node 24 runtime
+        run: |
+          set -euo pipefail
+
+          probe() {
+            local handler=$1
+            echo "::group::Probing $handler"
+
+            local container
+            container=$(docker run -d --rm -p 9000:8080 \
+              -v "$PWD":/var/task:ro \
+              public.ecr.aws/lambda/nodejs:24 \
+              "$handler")
+
+            local response=""
+            for _ in $(seq 1 60); do
+              if response=$(curl -s -m 1 -X POST \
+                http://localhost:9000/2015-03-31/functions/function/invocations \
+                -d '{}' 2>/dev/null) && [ -n "$response" ]; then
+                break
+              fi
+              sleep 0.5
+            done
+
+            echo "response: $response"
+
+            local exit_code=0
+            # Runtime.* errorTypes are init-level errors (CallbackHandlerDeprecated,
+            # ImportModuleError, MalformedHandlerName, ...). Handler-side errors
+            # from invoking with an empty event use different errorTypes and are
+            # expected here — we only care that init succeeded.
+            if echo "$response" | grep -Eq '"errorType":[[:space:]]*"Runtime\.'; then
+              echo "::error::$handler failed Lambda Node 24 runtime init"
+              docker logs "$container" 2>&1 || true
+              exit_code=1
+            fi
+
+            docker stop "$container" >/dev/null 2>&1 || true
+            echo "::endgroup::"
+            return $exit_code
+          }
+
+          probe lib/s3-handler.handler
+          probe lib/ag-handler.handler
