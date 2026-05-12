@@ -31,7 +31,7 @@ describe('Api Gateway handler tests', () => {
   });
 
   it('should handle a callback without findings', async () => {
-    await handler(hydrateEvent({
+    const result = await handler(hydrateEvent({
       "id": "2e4612793298b1d691202e75dc125f6e",
       "checksum": "30d3007d8fa7e76f2741805fbaf1c8bba9a00051",
       "content_length": "1251174",
@@ -43,25 +43,18 @@ describe('Api Gateway handler tests', () => {
         "bucket": "test-bucket",
         "key": "test-key"
       }
-    }), {}, (error, result) => {
-      "use strict";
-      assert(error === null, "there should be no errors");
-      assert(result.statusCode === 200);
-    });
+    }), {});
+    assert(result.statusCode === 200);
   });
 
   it('should handle a bogus callback', async () => {
-    await handler(hydrateEvent({"hello": "world"}),
-      {}, (error, result) => {
-        "use strict";
-        assert(error === null, "there should be no errors");
-        assert(result.statusCode === 500, "should return the file id");
-        assert(result.body.includes("no id provided"));
-      });
+    const result = await handler(hydrateEvent({"hello": "world"}), {});
+    assert(result.statusCode === 500, "should return the file id");
+    assert(result.body.includes("no id provided"));
   });
 
   it('should require bucket/key in callback metadata', async () => {
-    await handler(hydrateEvent({
+    const result = await handler(hydrateEvent({
         "id": "2e4612793298b1d691202e75dc125f6e",
         "checksum": "30d3007d8fa7e76f2741805fbaf1c8bba9a00051",
         "content_length": "1251174",
@@ -71,18 +64,13 @@ describe('Api Gateway handler tests', () => {
         "metadata": {
           "signature": utils.generateSignature("test-bucket", "test-key"),
         }
-      }),
-      {}, (error, result) => {
-        "use strict";
-        assert(error === null, "there should be no errors");
-        assert(result.statusCode === 500, "should return the file id");
-        assert(result.body.includes("no bucket supplied in metadata"));
-      });
+      }), {});
+    assert(result.statusCode === 500, "should return the file id");
+    assert(result.body.includes("no bucket supplied in metadata"));
   });
 
   it('should handle callbacks with findings', async () => {
-
-    await handler(hydrateEvent({
+    const result = await handler(hydrateEvent({
       "id": "2e4612793298b1d691202e75dc125f6e",
       "checksum": "30d3007d8fa7e76f2741805fbaf1c8bba9a00051",
       "content_length": "1251174",
@@ -94,15 +82,12 @@ describe('Api Gateway handler tests', () => {
         "bucket": "test-bucket",
         "key": "test-key"
       }
-    }), {}, (error, result) => {
-      "use strict";
-      assert(error === null, "there should be no errors");
-      assert(result.statusCode === 200);
-    });
+    }), {});
+    assert(result.statusCode === 200);
   });
 
   it('should ensure callback signatures match', async () => {
-    await handler(hydrateEvent({
+    const result = await handler(hydrateEvent({
       "id": "2e4612793298b1d691202e75dc125f6e",
       "checksum": "30d3007d8fa7e76f2741805fbaf1c8bba9a00051",
       "content_length": "1251174",
@@ -114,15 +99,12 @@ describe('Api Gateway handler tests', () => {
         "bucket": "test-bucket",
         "key": "test-key"
       }
-    }), {}, (error, result) => {
-      "use strict";
-      assert(error === null, "there should be no errors");
-      assert(result.statusCode === 200);
-    });
+    }), {});
+    assert(result.statusCode === 200);
   });
-  it('should ensure callback signatures match - negative', async () => {
 
-    await handler(hydrateEvent({
+  it('should ensure callback signatures match - negative', async () => {
+    const result = await handler(hydrateEvent({
       "id": "2e4612793298b1d691202e75dc125f6e",
       "checksum": "30d3007d8fa7e76f2741805fbaf1c8bba9a00051",
       "content_length": "1251174",
@@ -134,15 +116,12 @@ describe('Api Gateway handler tests', () => {
         "bucket": "test-bucket",
         "key": "test-key"
       }
-    }), {}, (error, result) => {
-      "use strict";
-      assert(error === null, "there should be no errors");
-      assert(result.statusCode === 500);
-    });
+    }), {});
+    assert(result.statusCode === 500);
   });
 
   it('should enforce signatures in callbacks', async () => {
-    await handler(hydrateEvent({
+    const result = await handler(hydrateEvent({
       "id": "2e4612793298b1d691202e75dc125f6e",
       "checksum": "30d3007d8fa7e76f2741805fbaf1c8bba9a00051",
       "content_length": "1251174",
@@ -154,17 +133,13 @@ describe('Api Gateway handler tests', () => {
         "bucket": "test-bucket",
         "key": "test-key"
       }
-    }), {}, (error, result) => {
-      "use strict";
-      "use strict";
-      assert(error === null, "there should be no errors");
-      assert(result.statusCode === 500, "should return the file id");
-      assert(result.body.includes("invalid signature"));
-    });
+    }), {});
+    assert(result.statusCode === 500, "should return the file id");
+    assert(result.body.includes("invalid signature"));
   });
 
   it('should handle api gateway proxy callbacks', async () => {
-    await handler(hydrateEvent({
+    const result = await handler(hydrateEvent({
       "id": "2e4612793298b1d691202e75dc125f6e",
       "checksum": "30d3007d8fa7e76f2741805fbaf1c8bba9a00051",
       "content_length": "1251174",
@@ -176,15 +151,12 @@ describe('Api Gateway handler tests', () => {
         "bucket": "test-bucket",
         "key": "test-key"
       }
-    }), {}, (error, result) => {
-      "use strict";
-      assert(error === null, "there should be no errors");
-      assert(result.statusCode === 200);
-    });
+    }), {});
+    assert(result.statusCode === 200);
   });
 
   it('should handle api gateway proxy callbacks and findings', async () => {
-    await handler(hydrateEvent({
+    const result = await handler(hydrateEvent({
       "id": "2e4612793298b1d691202e75dc125f6e",
       "checksum": "30d3007d8fa7e76f2741805fbaf1c8bba9a00051",
       "content_length": "1251174",
@@ -196,14 +168,12 @@ describe('Api Gateway handler tests', () => {
         "bucket": "test-bucket",
         "key": "test-key"
       }
-    }), {}, (error, result) => {
-      "use strict";
-      assert(error === null, "there should be no errors");
-      assert(result.statusCode === 200);
-    });
+    }), {});
+    assert(result.statusCode === 200);
   });
+
   it('should handle api gateway callbacks with errors', async () => {
-    await handler(hydrateEvent({
+    const result = await handler(hydrateEvent({
       "error": "error message",
       "id": "a62a6f0ba82f6ac11e95d09b8bdf965c",
       "metadata": {
@@ -211,11 +181,8 @@ describe('Api Gateway handler tests', () => {
         "bucket": "test-bucket",
         "key": "test-key"
       }
-    }), {}, (error, result) => {
-      "use strict";
-      assert(error === null, "there should be no errors");
-      assert(result.statusCode === 200);
-    });
+    }), {});
+    assert(result.statusCode === 200);
   });
 });
 
@@ -283,4 +250,3 @@ const hydrateEvent = (body) => {
     }
   }
 };
-
