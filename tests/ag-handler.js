@@ -1,9 +1,9 @@
 const handler = require('../lib/ag-handler.js').handler;
 const assert = require('assert');
-const it = require("mocha/lib/mocha.js").it;
-const describe = require("mocha/lib/mocha.js").describe;
-const beforeEach = require("mocha/lib/mocha.js").beforeEach;
-const afterEach = require("mocha/lib/mocha.js").afterEach;
+const it = require("mocha").it;
+const describe = require("mocha").describe;
+const beforeEach = require("mocha").beforeEach;
+const afterEach = require("mocha").afterEach;
 const utils = require('../lib/utils.js');
 const CONFIG = require('../lib/config').CONFIG;
 const { mockClient } = require('aws-sdk-client-mock');

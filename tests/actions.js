@@ -1,8 +1,8 @@
 const assert = require('assert');
-const it = require("mocha/lib/mocha.js").it;
-const describe = require("mocha/lib/mocha.js").describe;
-const beforeEach = require("mocha/lib/mocha.js").beforeEach;
-const afterEach = require("mocha/lib/mocha.js").afterEach;
+const it = require("mocha").it;
+const describe = require("mocha").describe;
+const beforeEach = require("mocha").beforeEach;
+const afterEach = require("mocha").afterEach;
 const actions = require('../lib/actions');
 const { mockClient } = require('aws-sdk-client-mock');
 const { S3Client, GetObjectTaggingCommand, PutObjectTaggingCommand } = require('@aws-sdk/client-s3');
