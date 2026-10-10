@@ -1,7 +1,7 @@
 const assert = require('assert');
-const it = require("mocha/lib/mocha.js").it;
-const describe = require("mocha/lib/mocha.js").describe;
-const beforeEach = require("mocha/lib/mocha.js").beforeEach;
+const it = require("mocha").it;
+const describe = require("mocha").describe;
+const beforeEach = require("mocha").beforeEach;
 const utils = require('../lib/utils');
 const {CONFIG} = require("../lib/config");
 
