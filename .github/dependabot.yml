@@ -1,0 +1,11 @@
+# Version updates for the Scanii SDK only, so each @scanii/* release reaches
+# the lambda as a reviewed pull request. Other dependencies move through
+# security updates (Grumpy), not here.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    allow:
+      - dependency-name: "@scanii/*"
