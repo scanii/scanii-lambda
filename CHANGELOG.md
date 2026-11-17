@@ -2,22 +2,31 @@
 
 All notable changes to `scanii-lambda` are documented here. Versions follow [SemVer](https://semver.org).
 
-## [3.1.1] — Security updates
+## [3.1.1] — Tagging and delete-on-findings fix, security updates
 
 ### Fixed
 
+- **Tagging and delete-on-findings failed on every callback in 3.0.3 and
+  3.1.0. Upgrade.** Those releases forced `fast-xml-parser` 5.7.0 on the AWS
+  SDK's S3 client, whose XML parser could not use it, so every S3 response
+  with an XML body failed to deserialize. `GetObjectTagging` failed, so
+  `actionTagObject` (on by default) failed the callback, and with
+  `actionDeleteObjectOnFinding` objects with findings were not deleted,
+  because tagging runs first. S3's own error responses failed the same way.
+  Submitting files for scanning was not affected. A new test runs the S3
+  client's real response parsing, which the mocked tests never did
+  ([#125](https://github.com/scanii/scanii-lambda/pull/125)).
 - `fast-xml-parser` is no longer in the function: `@aws-sdk/client-s3` and
   `@aws-sdk/s3-request-presigner` are updated from 3.1010.0 to 3.1166.0, whose
   XML handling (`@aws-sdk/xml-builder` 3.972.43) no longer depends on it. That
-  clears CVE-2026-126066 in `fast-xml-parser` 5.7.0, which the function ran,
-  without the major upgrade of `@nodable/entities` that `fast-xml-parser`'s own
-  fix (5.12.0) requires, and the `fast-xml-parser` and `fast-xml-builder`
-  overrides are gone ([#124](https://github.com/scanii/scanii-lambda/issues/124)).
-- `minimatch`, a development dependency of eslint and mocha, is held at 11.0.7
-  by an override, for CVE-2026-118764 (fixed only in 11). eslint 10.15 and glob
-  14 already require `minimatch` 11; mocha 12, the latest, still asks for 10,
-  and its tests pass on 11. It does not run in the function, but it ships in the
-  deployed package (see 3.0.3).
+  fixes the above, clears CVE-2026-126066, and needs no major upgrade of
+  `@nodable/entities`, which `fast-xml-parser`'s own fix (5.12.0) requires
+  ([#125](https://github.com/scanii/scanii-lambda/pull/125)).
+- `minimatch`, a development dependency, is held at 11.0.7 by an override for
+  CVE-2026-118764, fixed only in 11: eslint, `@eslint/config-array`, glob and
+  mocha in this tree still ask for 10. Tests and eslint pass on 11. It does not
+  run in the function, but it ships in the deployed package (see 3.0.3)
+  ([#125](https://github.com/scanii/scanii-lambda/pull/125)).
 
 ## [3.1.0] — Scanii SDK update
 
