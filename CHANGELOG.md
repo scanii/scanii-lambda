@@ -2,6 +2,22 @@
 
 All notable changes to `scanii-lambda` are documented here. Versions follow [SemVer](https://semver.org).
 
+## [3.1.0] — Scanii SDK update
+
+### Changed
+
+- `@scanii/core`, the Scanii API client the submit handler uses, is updated
+  from 1.1.0 to 1.5.0
+  ([#121](https://github.com/scanii/scanii-lambda/pull/121)). The lambda calls
+  only `fetch` and `retrieve`, which are unchanged; the SDK's new v2.2 methods
+  (`retrieveTrace`, `processFromUrl`, `delete`, `deleteTrace`) and its
+  `ScaniiTarget` constants are not used. SDK 1.3.0 deprecates the default
+  latency-routed endpoint (`https://api.scanii.com`). The lambda does not rely
+  on it: it always passes an explicit regional endpoint, from the
+  `scaniiApiEndpoint` parameter (regional hosts only, default
+  `api-us1.scanii.com`) or `API_ENDPOINT`, so no configuration change is
+  needed.
+
 ## [3.0.3] — Security updates
 
 ### Fixed
