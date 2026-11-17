@@ -6,7 +6,7 @@ const path = require('path');
 // The S3 client must parse real S3 XML: aws-sdk-client-mock never runs the deserializers, which is
 // how 3.0.3 and 3.1.0 shipped with every XML response failing (scanii-lambda#124).
 describe('S3 wire format', () => {
-  const out = JSON.parse(execFileSync(process.execPath, [path.join(__dirname, 'fixtures', 's3-wire-check.js')], { encoding: 'utf8' }));
+  const out = JSON.parse(execFileSync(process.execPath, [path.join(__dirname, 'fixtures', 's3-wire-check.js')], { encoding: 'utf8', timeout: 30000 }));
 
   it('parses GetObjectTagging tags, entities included', () => {
     assert.deepStrictEqual(out.tags, { tags: [

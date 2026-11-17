@@ -30,7 +30,9 @@ const cases = {
   missing: [404, '<?xml version="1.0" encoding="UTF-8"?><Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message></Error>'],
 };
 
-(async () => {
+// Only when run on its own: mocha loads every file under tests/, this one included, and here it must
+// do nothing.
+if (require.main === module) (async () => {
   const out = {};
   for (const [name, [status, body]] of Object.entries(cases)) {
     const client = new S3Client({

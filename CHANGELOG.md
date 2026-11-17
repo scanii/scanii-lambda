@@ -6,15 +6,15 @@ All notable changes to `scanii-lambda` are documented here. Versions follow [Sem
 
 ### Fixed
 
-- **Tagging and delete-on-findings failed on every callback in 3.0.3 and
-  3.1.0. Upgrade.** Those releases forced `fast-xml-parser` 5.7.0 on the AWS
-  SDK's S3 client, whose XML parser could not use it, so every S3 response
-  with an XML body failed to deserialize. `GetObjectTagging` failed, so
+- **Tagging, and delete-on-findings when tagging is on, failed on every callback
+  in 3.0.3 and 3.1.0. Upgrade.** Those releases forced `fast-xml-parser` 5.7.0
+  on the AWS SDK's S3 client, whose XML parser could not use it, so every S3
+  response with an XML body failed to deserialize. `GetObjectTagging` failed, so
   `actionTagObject` (on by default) failed the callback, and with
-  `actionDeleteObjectOnFinding` objects with findings were not deleted,
-  because tagging runs first. S3's own error responses failed the same way.
-  Submitting files for scanning was not affected. A new test runs the S3
-  client's real response parsing, which the mocked tests never did
+  `actionDeleteObjectOnFinding` objects with findings were not deleted, because
+  tagging runs first. S3's own error responses failed the same way. Submitting
+  files for scanning was not affected. A new test runs the S3 client's real
+  response parsing, which the mocked tests never did
   ([#125](https://github.com/scanii/scanii-lambda/pull/125)).
 - `fast-xml-parser` is no longer in the function: `@aws-sdk/client-s3` and
   `@aws-sdk/s3-request-presigner` are updated from 3.1010.0 to 3.1166.0, whose
