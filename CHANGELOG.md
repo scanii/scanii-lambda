@@ -18,6 +18,13 @@ All notable changes to `scanii-lambda` are documented here. Versions follow [Sem
   `api-us1.scanii.com`) or `API_ENDPOINT`, so no configuration change is
   needed.
 
+### Fixed
+
+- `serialize-javascript`, a development dependency pulled in by `mocha`, is
+  updated from 7.1.2 to 7.1.3 for CVE-2026-115897
+  ([#122](https://github.com/scanii/scanii-lambda/pull/122)). It does not run
+  in the function, but it ships in the deployed package (see 3.0.3).
+
 ## [3.0.3] — Security updates
 
 ### Fixed
