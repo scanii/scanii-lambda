@@ -2,6 +2,22 @@
 
 All notable changes to `scanii-lambda` are documented here. Versions follow [SemVer](https://semver.org).
 
+## [3.0.3] — Security updates
+
+### Fixed
+
+- `fast-xml-parser`, which the AWS SDK's S3 client uses to parse XML responses, is updated from 5.5.8
+  to 5.7.0 for CVE-2026-41650, and `fast-xml-builder` from 1.1.4 to 1.1.7 for CVE-2026-44665
+  ([#114](https://github.com/scanii/scanii-lambda/pull/114)). Both run in the deployed function.
+- Development tooling is updated: `brace-expansion` to 2.1.7 and 5.0.12 (CVE-2026-102277,
+  CVE-2026-13149), `flatted` to 3.4.2 (CVE-2026-33228), `js-yaml` to 4.3.2 (CVE-2026-53550,
+  CVE-2026-59869, CVE-2026-84375, GHSA-5p4m-2wfm-xmqj), `@humanfs/node` to 0.16.8
+  (GHSA-p498-v437-472g) ([#114](https://github.com/scanii/scanii-lambda/pull/114),
+  [#115](https://github.com/scanii/scanii-lambda/pull/115)), and `mocha` from 11 to 12 for its
+  `serialize-javascript` fix ([#117](https://github.com/scanii/scanii-lambda/pull/117)). None of
+  these runs in the function, but the deployment bundle packages every installed module, so they
+  were in it.
+
 ## [3.0.2] — Deployment README refresh
 
 ### Changed
